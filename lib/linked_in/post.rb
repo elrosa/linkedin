@@ -48,12 +48,19 @@ module LinkedIn
 
     # @return [String]
     def text
-      @text ||= case @attrs["update_type"]
-                  when "STAT" then @attrs["update_content"]["person"]["current_status"]
-                  when "SHAR" then @attrs["update_content"]["person"]["comment"]
-                  when "VIRL" then "added_#{@attrs["update_action"]["action"]["code"]}"
-                  else nil
-                end
+      @text ||=
+        if @attrs["update_content"].present?
+          case @attrs["update_type"]
+            when "STAT" then @attrs["update_content"]["person"]["current_status"]
+            when "SHAR" then @attrs["update_content"]["person"]["comment"]
+            when "VIRL" then "added_#{@attrs["update_content"]["update_action"]["action"]["code"]}".downcase
+            else nil
+          end
+        else
+          nil
+        end
+    rescue
+      @text ||= nil
     end
 
     # @return [LinkedIn::User]
