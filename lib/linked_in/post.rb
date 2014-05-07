@@ -52,7 +52,7 @@ module LinkedIn
         if @attrs["update_content"].present?
           case @attrs["update_type"]
             when "STAT" then @attrs["update_content"]["person"]["current_status"]
-            when "SHAR" then @attrs["update_content"]["person"]["comment"]
+            when "SHAR" then @attrs["update_content"]["person"]["current_share"]["comment"]
             when "VIRL" then "added_#{@attrs["update_content"]["update_action"]["action"]["code"]}".downcase
             else nil
           end
