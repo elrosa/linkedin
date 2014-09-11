@@ -171,6 +171,11 @@ module LinkedIn
                   #post.post_type = :organization
               end
             end
+          when "VIRL"
+            original = attrs["updateContent"].fetch("updateAction", {}).fetch("updateContent", {}).fetch("person", {})
+            if original.any?
+              activities << LinkedIn::Activity.new("name" => "#{original["firstName"]} #{original["lastName"]}")
+            end
         end
         activities
       end
