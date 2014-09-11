@@ -1,6 +1,6 @@
 module LinkedIn
   class Post < LinkedIn::Base
-    lazy_attr_reader :activities, :commentable, :comments, :likable, :liked, :num_likes,
+    lazy_attr_reader :activities, :commentable, :comments, :comments_count, :likable, :liked, :num_likes,
                      :post_type, :posted_at, :text, :update_key, :user
 
 
@@ -23,6 +23,10 @@ module LinkedIn
     # @return [LinkedIn::Comments]
     def comments
       @comments ||= @attrs["update_comments"].nil? ? [] : @attrs["update_comments"].fetch("all", []).map{|comment| LinkedIn::Comment.new(comment)}
+    end
+    # @return Integer
+    def comments_count
+      @comments_count ||= @attrs["update_comments"].nil? ? 0 : @attrs["update_comments"].fetch("_total", 0)
     end
 
     # @return [Boolean]
@@ -65,7 +69,24 @@ module LinkedIn
 
     # @return [LinkedIn::User]
     def user
-      @user ||= (@attrs["update_type"] == "MSFC") ? LinkedIn::User.new(@attrs["update_content"]["company_person_update"]["person"]) : LinkedIn::User.new(@attrs["update_content"]["person"]) unless @attrs["update_content"].nil?
+      return @user if @user.present?
+
+      user_hash = nil
+      update = @attrs["update_content"]
+
+      case @attrs["update_type"]
+      when "JOBP"
+        user_hash = update.fetch("job", {}).fetch("job_poster", {})
+      when "MSFC"
+        user_hash = update.fetch("company_person_update", {}).fetch("person", {})
+      when "CMPY"
+        #I HATE THEM
+        user_hash = update.fetch("company_update", {}).fetch("company_profile_update", {}).fetch("editor", {})
+        user_hash ||= update.fetch("company_person_update", {}).fetch("person", {})
+      end
+      user_hash ||= update.fetch("person", {})
+
+      @user = LinkedIn::User.new(user_hash)
     end
 
     private

@@ -23,7 +23,7 @@ module LinkedIn
     # Initializes a new Base object
     #
     # @param attrs [Hash]
-    # @return [Xing::Base]
+    # @return [LinkedIn::Base]
     def initialize(attrs={})
       @attrs = attrs.dup
     end
