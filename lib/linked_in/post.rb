@@ -1,7 +1,7 @@
 module LinkedIn
   class Post < LinkedIn::Base
     lazy_attr_reader :activities, :commentable, :comments, :comments_count, :likable, :liked, :num_likes,
-                     :post_type, :posted_at, :text, :update_key, :user
+                     :post_type, :posted_at, :text, :update_key, :user, :timestamp
 
 
     #@return [LinkedIn::Post]
