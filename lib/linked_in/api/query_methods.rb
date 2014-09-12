@@ -23,7 +23,7 @@ module LinkedIn
 
       def stream_updates(options={})
         path = "#{person_path(options)}/network/updates"
-        raw_posts = simple_query(path, options.merge({:type => "SHAR"}))
+        raw_posts = simple_query(path, {params: {options.merge({:type => "SHAR"})})
         raw_posts.fetch("all", []).map{|post|
           LinkedIn::Status.new(post)
         }
