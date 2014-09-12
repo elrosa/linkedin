@@ -36,21 +36,7 @@ module LinkedIn
     # @return Integer
     def company
       return @company if @company.present?
-
-      company_hash = @attrs.deep_find('company') || {}
-      #update = @attrs["update_content"]
-      #
-      #case @attrs["update_type"]
-      #  when "JOBP"
-      #    company_hash = update.fetch("job", {}).fetch("company", nil)
-      #  when "CMPY"
-      #    #I HATE THEM
-      #    company_hash = update.fetch("company_update", {}).fetch("company", nil)
-      #    company_hash ||= update.fetch("job", {}).fetch("company", nil)
-      #end
-      #company_hash ||= update.fetch("company", {})
-
-      @company = LinkedIn::Company.new(company_hash)
+      @company = LinkedIn::Company.new(@attrs.deep_find('company') || {})
     end
 
     # @return [Boolean]
@@ -70,7 +56,6 @@ module LinkedIn
 
     # @return [Symbol]
     def post_type
-      #@post_type ||= @attrs["update_type"].downcase.to_sym unless @attrs["update_type"].nil?
       @post_type ||= guess_post_type(@attrs)
     end
 
@@ -82,8 +67,6 @@ module LinkedIn
             when "STAT" then @attrs["update_content"]["person"]["current_status"]
             when "SHAR" then @attrs["update_content"]["person"]["current_share"]["comment"]
             else @attrs.deep_find("action").fetch("code", nil)
-            #when "VIRL" then "added_#{@attrs["update_content"]["update_action"]["action"]["code"]}".downcase
-            #else nil
           end
         else
           nil
@@ -94,7 +77,7 @@ module LinkedIn
 
     # @return [LinkedIn::User]
     def user
-      return @user if @user.present?
+      return @user if @user
 
       user_hash = nil
       update = @attrs["update_content"]
@@ -102,14 +85,11 @@ module LinkedIn
       case @attrs["update_type"]
       when "JOBP"
         user_hash = update.fetch("job", {}).fetch("job_poster", nil)
-      when "MSFC"
-        user_hash = update.fetch("company_person_update", {}).fetch("person", nil)
       when "CMPY"
-        #I HATE THEM
         user_hash = update.fetch("company_update", {}).fetch("company_profile_update", {}).fetch("editor", nil)
-        #user_hash ||= update.fetch("company_person_update", {}).fetch("person", nil)
       end
-      user_hash ||= update.deep_find('person') #fetch("person", {})
+
+      user_hash ||= @attrs.deep_find('person') || {}
 
       @user = LinkedIn::User.new(user_hash)
     end

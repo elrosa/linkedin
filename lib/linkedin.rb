@@ -30,8 +30,11 @@ module LinkedIn
   autoload :Search,  "linked_in/search"
   autoload :Version, "linked_in/version"
   autoload :Base,    "linked_in/base"
-  autoload :Post,    "linked_in/post"
+
   autoload :Comment, "linked_in/comment"
   autoload :User,    "linked_in/user"
+  autoload :Company, "linked_in/company"
   autoload :Activity,"linked_in/activity"
+
+  autoload :Post,    "linked_in/post"
 end
