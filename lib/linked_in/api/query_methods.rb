@@ -23,7 +23,7 @@ module LinkedIn
 
       def stream_updates(options={})
         path = "#{person_path(options)}/network/updates"
-        raw_posts = simple_query(path, options.merge({type: ['SHAR']}))
+        raw_posts = simple_query(path, options.merge({:type => "SHAR"}))
         raw_posts.fetch("all", []).map{|post|
           LinkedIn::Status.new(post)
         }
@@ -61,9 +61,10 @@ module LinkedIn
             path +=":(#{fields.map{ |f| f.to_s.gsub("_","-") }.join(',')})"
           end
           headers = options[:headers] || {}
-          if options[:params]
-            path += "?#{options[:params].to_param}"
-          end
+          params_str = ""
+          params = options[:params] || {}
+          params.each { |key, value| params_str << "#{key}=#{value}&"}
+          path += ("?" + params_str.chop) unless (params_str == "")
           Mash.from_json(get(path, headers))
         end
 
