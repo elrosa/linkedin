@@ -1,13 +1,17 @@
 module LinkedIn
   class Post < LinkedIn::Base
-    lazy_attr_reader :activities, :commentable, :comments, :comments_count, :likable, :liked, :num_likes,
-                     :post_type, :posted_at, :text, :update_key, :user, :timestamp
+    lazy_attr_reader :action, :activities, :commentable, :comments, :comments_count, :likable, :liked, :num_likes,
+                     :post_type, :posted_at, :text, :update_key, :user, :company, :timestamp
 
 
     #@return [LinkedIn::Post]
     def initialize(attrs={})
       super
       self.activities
+    end
+
+    def action
+
     end
 
     # @return [LinkedIn::Activity]
@@ -27,6 +31,26 @@ module LinkedIn
     # @return Integer
     def comments_count
       @comments_count ||= @attrs["update_comments"].nil? ? 0 : @attrs["update_comments"].fetch("_total", 0)
+    end
+
+    # @return Integer
+    def company
+      return @company if @company.present?
+
+      company_hash = @attrs.deep_find('company') || {}
+      #update = @attrs["update_content"]
+      #
+      #case @attrs["update_type"]
+      #  when "JOBP"
+      #    company_hash = update.fetch("job", {}).fetch("company", nil)
+      #  when "CMPY"
+      #    #I HATE THEM
+      #    company_hash = update.fetch("company_update", {}).fetch("company", nil)
+      #    company_hash ||= update.fetch("job", {}).fetch("company", nil)
+      #end
+      #company_hash ||= update.fetch("company", {})
+
+      @company = LinkedIn::Company.new(company_hash)
     end
 
     # @return [Boolean]
@@ -57,8 +81,9 @@ module LinkedIn
           case @attrs["update_type"]
             when "STAT" then @attrs["update_content"]["person"]["current_status"]
             when "SHAR" then @attrs["update_content"]["person"]["current_share"]["comment"]
-            when "VIRL" then "added_#{@attrs["update_content"]["update_action"]["action"]["code"]}".downcase
-            else nil
+            else @attrs.deep_find("action").fetch("code", nil)
+            #when "VIRL" then "added_#{@attrs["update_content"]["update_action"]["action"]["code"]}".downcase
+            #else nil
           end
         else
           nil
@@ -76,15 +101,15 @@ module LinkedIn
 
       case @attrs["update_type"]
       when "JOBP"
-        user_hash = update.fetch("job", {}).fetch("job_poster", {})
+        user_hash = update.fetch("job", {}).fetch("job_poster", nil)
       when "MSFC"
-        user_hash = update.fetch("company_person_update", {}).fetch("person", {})
+        user_hash = update.fetch("company_person_update", {}).fetch("person", nil)
       when "CMPY"
         #I HATE THEM
-        user_hash = update.fetch("company_update", {}).fetch("company_profile_update", {}).fetch("editor", {})
-        user_hash ||= update.fetch("company_person_update", {}).fetch("person", {})
+        user_hash = update.fetch("company_update", {}).fetch("company_profile_update", {}).fetch("editor", nil)
+        #user_hash ||= update.fetch("company_person_update", {}).fetch("person", nil)
       end
-      user_hash ||= update.fetch("person", {})
+      user_hash ||= update.deep_find('person') #fetch("person", {})
 
       @user = LinkedIn::User.new(user_hash)
     end

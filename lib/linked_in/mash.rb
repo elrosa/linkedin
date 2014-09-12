@@ -1,8 +1,10 @@
 require 'hashie'
+require 'hashie/extensions/deep_find'
 require 'multi_json'
 
 module LinkedIn
   class Mash < ::Hashie::Mash
+    extend Hashie::Extensions::DeepFind
 
     # a simple helper to convert a json string to a Mash
     def self.from_json(json_string)
