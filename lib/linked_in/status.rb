@@ -1,7 +1,7 @@
 module LinkedIn
   class Status < LinkedIn::Base
     lazy_attr_reader :commentable, :comments, :comments_count, :likable, :liked, :num_likes,
-                     :posted_at, :text, :update_key, :user, :timestamp
+                     :posted_at, :text, :update_key, :user, :timestamp, :link, :link_title
 
 
     #@return [LinkedIn::Status]
@@ -40,6 +40,14 @@ module LinkedIn
     # @return [String]
     def text
       @text ||= @attrs.deep_find('current_status') || @attrs.deep_find('current_share').try(:comment) || @attrs.deep_find("body")
+    end
+
+    def link
+      @link ||= @attrs.deep_find('content').try(:submitted_url)
+    end
+
+    def link_title
+      @link_title ||= @attrs.deep_find('content').try(:title)
     end
 
     # @return [LinkedIn::User]
