@@ -65,6 +65,9 @@ module LinkedIn
           params = options[:params] || {}
           params.each { |key, value| params_str << "#{key}=#{value}&"}
           path += ("?" + params_str.chop) unless (params_str == "")
+
+          pp path
+
           Mash.from_json(get(path, headers))
         end
 
