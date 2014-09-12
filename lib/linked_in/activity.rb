@@ -1,6 +1,6 @@
 module LinkedIn
   class Activity < LinkedIn::Base
-    lazy_attr_reader :description_url, :name, :url
+    lazy_attr_reader :name, :url
 
 
     #@return [LinkedIn::Activity]

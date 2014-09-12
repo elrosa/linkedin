@@ -36,5 +36,6 @@ module LinkedIn
   autoload :Company, "linked_in/company"
   autoload :Activity,"linked_in/activity"
 
+  autoload :Status,  "linked_in/status"
   autoload :Post,    "linked_in/post"
 end
