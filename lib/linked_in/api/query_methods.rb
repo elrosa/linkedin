@@ -28,6 +28,13 @@ module LinkedIn
           LinkedIn::Status.new(post)
         }
       end
+      def get_comments(key, options={})
+        path = "/people/~/network/updates"
+        raw_comments = simple_query(path, options)
+        raw_comments.fetch("values", []).map{|comment|
+          LinkedIn::Comment.new(comment)
+        }
+      end
 
       def connection_count(options={})
         path = "#{person_path(options)}/num-connections"
