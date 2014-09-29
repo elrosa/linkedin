@@ -29,7 +29,7 @@ module LinkedIn
         }
       end
       def get_comments(key, options={})
-        path = "/people/~/network/updates"
+        path = "/people/~/network/updates/key=#{key}/update-comments"
         raw_comments = simple_query(path, options)
         raw_comments.fetch("values", []).map{|comment|
           LinkedIn::Comment.new(comment)
